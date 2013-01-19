@@ -14,6 +14,7 @@ class RobotDemo : public SimpleRobot
 	Solenoid sol6;
 	Solenoid sol7;
 	Solenoid sol8;
+	Relay compressor;
 
 public:
 	RobotDemo(void):
@@ -27,7 +28,8 @@ public:
 		sol5(5),
 		sol6(6),
 		sol7(7),
-		sol8(8)
+		sol8(8),
+		compressor(1,Relay::kForwardOnly)
 	{
 		myRobot.SetExpiration(0.1);
 	}
@@ -56,7 +58,12 @@ public:
 			sol5.Set(stick.GetRawButton(5));
 			sol6.Set(stick.GetRawButton(6));
 			sol7.Set(stick.GetRawButton(7));
-			sol8.Set(stick.GetRawButton(8));
+			//sol8.Set(stick.GetRawButton(8));
+			if (stick.GetRawButton(8)) {
+				compressor.Set(Relay::kOn);
+			} else {
+				compressor.Set(Relay::kOff);
+			}
 		}
 	}
 	
