@@ -5,12 +5,14 @@ class RobotDemo : public SimpleRobot
 	RobotDrive myRobot; // robot drive system
 	Joystick stick; // only joystick
 	CANJaguar jag1; //Declartion for Jaguar 1
+	Solenoid sol1;
 
 public:
 	RobotDemo(void):
 		myRobot(1, 2),	// these must be initialized in the same order
 		stick(1),		// as they are declared above.
-		jag1(5,CANJaguar::kVoltage)
+		jag1(5,CANJaguar::kVoltage),
+		sol1(1)
 	{
 		myRobot.SetExpiration(0.1);
 	}
@@ -32,6 +34,7 @@ public:
 			printf("%f", jag1.GetOutputVoltage());
 			printf("\n");
 			Wait(0.01);				// wait for a motor update time
+			sol1().Set(true);
 		}
 	}
 	
