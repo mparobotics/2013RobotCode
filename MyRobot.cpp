@@ -1,4 +1,5 @@
 #include "WPILib.h"
+#include <Solenoid.h>
 
 class RobotDemo : public SimpleRobot
 {
@@ -34,7 +35,7 @@ public:
 			printf("%f", jag1.GetOutputVoltage());
 			printf("\n");
 			Wait(0.01);				// wait for a motor update time
-			sol1().Set(true);
+			sol1.Set(true);
 		}
 	}
 	
