@@ -1,3 +1,10 @@
+#include <math.h>
+#ifndef MATRIXLIB
+#define MATRIXLIB
+/*Input: matrix to invert [source], and destination matrix. That is, this
+function has the side-effect of changing its second argument to reflect the
+output. If there is no solution, "false" is returned. If there is, "true"
+is returned*/
 bool InvertMatrix(const double m[16], double invOut[16])
 {
     double inv[16], det;
@@ -135,3 +142,4 @@ void MultiplyMatrix(double m[16], double v[4], double r[4]) {
 	r[3] = m[12] * v[0] + m[13] * v[1] + m[14] * v[2] + m[15] * v[3];
 	return;
 }
+#endif
