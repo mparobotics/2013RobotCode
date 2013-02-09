@@ -1,4 +1,5 @@
 #include "WPILib.h"
+#include <ADXL345_SPI.h>
 #include <Solenoid.h>
 
 class RobotDemo : public SimpleRobot
@@ -15,6 +16,7 @@ class RobotDemo : public SimpleRobot
 	Solenoid sol7;
 	Solenoid sol8;
 	Relay compressor;
+	Gyro gyro;
 
 public:
 	RobotDemo(void):
@@ -29,7 +31,8 @@ public:
 		sol6(6),
 		sol7(7),
 		sol8(8),
-		compressor(1,Relay::kForwardOnly)
+		compressor(1,Relay::kForwardOnly),
+		gyro(1)
 	{
 		myRobot.SetExpiration(0.1);
 	}
@@ -45,11 +48,12 @@ public:
 		myRobot.SetSafetyEnabled(true);
 		jag1.SetSpeedReference(CANJaguar::kSpeedRef_None);
 		jag1.EnableControl();
+		gyro.Reset(); 
 		while (IsOperatorControl())
 		{
 			jag1.Set(stick.GetY()*-11.0*1.09); //Set Jag
-			printf("%f", jag1.GetOutputVoltage());
-			printf("\n");
+			//printf("%f", jag1.GetOutputVoltage());
+			//printf("\n");
 			Wait(.05);				// wait for a motor update time
 			sol1.Set(stick.GetRawButton(1));
 			sol2.Set(stick.GetRawButton(2));
@@ -64,6 +68,7 @@ public:
 			} else {
 				compressor.Set(Relay::kOff);
 			}
+			printf("%f", gyro.GetAngle());
 		}
 	}
 	
