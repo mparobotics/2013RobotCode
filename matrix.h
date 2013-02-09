@@ -5,7 +5,7 @@
 function has the side-effect of changing its second argument to reflect the
 output. If there is no solution, "false" is returned. If there is, "true"
 is returned*/
-bool InvertMatrix(const double m[16], double invOut[16])
+bool invertMatrix(const double m[16], double invOut[16])
 {
     double inv[16], det;
     int i;
@@ -135,7 +135,7 @@ bool InvertMatrix(const double m[16], double invOut[16])
     return true;
 }
 //m is a 4x4 matrix, v is a column vector
-void MultiplyMatrix(double m[16], double v[4], double r[4]) {
+void multiplyMatrix(double m[16], double v[4], double r[4]) {
 	r[0] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3] * v[3];
 	r[1] = m[4] * v[0] + m[5] * v[1] + m[6] * v[2] + m[7] * v[3];
 	r[2] = m[8] * v[0] + m[9] * v[1] + m[10] * v[2] + m[11] * v[3];
