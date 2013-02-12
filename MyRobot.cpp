@@ -1,23 +1,32 @@
 #include "WPILib.h"
 #include <ADXL345_SPI.h>
 #include <Solenoid.h>
-#include "matrix.h"
+#include "omnitrain.h"
 
 class RobotDemo : public SimpleRobot
 {
 	RobotDrive myRobot; // robot drive system
-	Joystick stick; // only joystick
-	CANJaguar jag1; //Declartion for Jaguar 1
-	Gyro gyro;
+	Joystick stick1; // joystick1
+	Joystick stick2; //joystick2
+	CANJaguar* drivejags[4]; //Declartion for Jaguar 1
+	CANJaguar* innerlift;
+	CANJaguar* outerlifts[2];
+	//Gyro gyro;
 
 public:
 	RobotDemo(void):
 		myRobot(1, 2),	// these must be initialized in the same order
-		stick(1),		// as they are declared above.
-		jag1(5,CANJaguar::kVoltage),
-		gyro(1)
+		stick1(1),		// as they are declared above.
+		stick2(2)
 	{
 		myRobot.SetExpiration(0.1);
+		drivejags[0] = new CANJaguar(3, CANJaguar::kVoltage);
+		drivejags[1] = new CANJaguar(1, CANJaguar::kVoltage);
+		drivejags[2] = new CANJaguar(4, CANJaguar::kVoltage);
+		drivejags[3] = new CANJaguar(2, CANJaguar::kVoltage);
+		innerlift = new CANJaguar(6, CANJaguar::kVoltage);
+		outerlifts[0] = new CANJaguar(7, CANJaguar::kVoltage);
+		outerlifts[1] = new CANJaguar(5, CANJaguar::kVoltage);
 	}
 
 	void Autonomous(void)
@@ -29,16 +38,21 @@ public:
 	void OperatorControl(void)
 	{
 		myRobot.SetSafetyEnabled(true);
-		jag1.SetSpeedReference(CANJaguar::kSpeedRef_None);
-		jag1.EnableControl();
-		gyro.Reset(); 
+		for (int i = 0; i < 4; i++) {
+			drivejags[i]->SetSpeedReference(CANJaguar::kSpeedRef_None);
+			drivejags[i]->EnableControl();
+		}
+		setupOmniTrain(2.0, 2.0);
+		double drive[4];
 		while (IsOperatorControl())
 		{
-			jag1.Set(stick.GetY()*-12.0); //Set Jag
+			driveOmniTrain(stick1.GetX(), stick1.GetY(), stick2.GetX(), drive);
+			for (int i = 0; i < 4; i++) {
+				drivejags[i]->Set(drive[i] * 12.0);
+			}
 			//printf("%f", jag1.GetOutputVoltage());
 			//printf("\n");
-			Wait(.05);				// wait for a motor update time
-			printf("%f", gyro.GetAngle());
+			Wait(1.0 / 30.0);				// wait for a motor update time
 		}
 	}
 	

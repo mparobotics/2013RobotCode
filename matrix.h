@@ -5,9 +5,7 @@
 function has the side-effect of changing its second argument to reflect the
 output. If there is no solution, "false" is returned. If there is, "true"
 is returned*/
-typedef int bool;
-#define true 1
-#define false 0
+
 bool invertMatrix(const double m[16], double invOut[16])
 {
     double inv[16], det;

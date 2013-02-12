@@ -89,8 +89,7 @@ void driveOmniTrain(double xvel, double yvel, double t, double drivetrain[4]) {
 	multiplyMatrix(drivetrain_inverse_mat, columnvec, drivetrain);
 	double lowval = heuristic(drivetrain);
 	
-	double midval;
-        int i;	
+    int i;	
 	for (i = 0; i < 9; i++) {
             if (highval < lowval) {
                 lowbound = (lowbound + highbound) * 0.5;
