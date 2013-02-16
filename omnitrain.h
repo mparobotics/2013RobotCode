@@ -1,7 +1,12 @@
+/* DO NOT USE THIS UNLESS YOU HAVE A COMPELLING STATE INTEREST... ERR,
+ * UNLESS YOU HAVE A GOOD UNDERSTANDING OF THE MATH AND HORRORS WITHIN -GBAN
+ */
+
+
 #include "matrix.h"
 const double spacing_length = 7.875; //length of wheel contact spacing [in]
 const double spacing_width = 5.5; // width of wheel contact spacing [in]
-double p = .5; //proportion of weight distribution [see drawings]
+double p = .5; //proportion of weight distribution [see drawings] [front-to-back]
 
 double distanceFormula(double a, double b) {
 	return sqrt((a * a) + (b * b));
@@ -109,7 +114,7 @@ void driveOmniTrain(double xvel, double yvel, double t, double drivetrain[4]) {
         multiplyMatrix(drivetrain_inverse_mat, columnvec, drivetrain);
         return;		
 }
-
+/* YOU WANT TO USE THIS -- [voltages are actually bounded]*/
 void boundedDriveOmniTrain(double xvel, double yvel, double t, double drivetrain[4]) {
     driveOmniTrain(xvel, yvel, t, drivetrain);
     int i;
