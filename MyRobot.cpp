@@ -34,9 +34,12 @@ public:
 		outerlifts[2] = new CANJaguar(7, CANJaguar::kVoltage);
 		outerlifts[3] = new CANJaguar(8, CANJaguar::kVoltage);
 		
+		//doing this only because "sendableChooser" needs a pointer.
 		states[0] = false;
 		states[1] = true;
 		
+		
+		//Initialize the chooser in the dashboard between control modes
 		controlChooser = new SendableChooser();
 		controlChooser->AddDefault("Xbox Controllers", states);
 		controlChooser->AddObject("ATK3 Joysticks", states + 1);
@@ -108,23 +111,23 @@ public:
 			}
 			*/
 			
-			outerliftvoltage = -12.0 * joytrim(stick1.GetRawAxis(2));
-			if (stick1.GetRawButton(5)) {
+			outerliftvoltage = -12.0 * joytrim(controlmethod ? stick1.GetY() : stick1.GetRawAxis(2));
+			if (controlmethod ? stick1.GetTrigger() : stick1.GetRawButton(5)) {
 				outerliftvoltage = outerliftvoltage / 2.0;
 			}
 			for (int i = 0; i < 4; i++) {
 				outerlifts[i]->Set(outerliftvoltage * (i > 1 ? -1 : 1));
 			}
 			
-			innerliftvoltage = 12.0 * joytrim(stick1.GetRawAxis(5));
-			if (stick1.GetRawButton(6)) {
+			innerliftvoltage = 12.0 * joytrim(controlmethod ? stick2.GetY() : stick1.GetRawAxis(5));
+			if (controlmethod ? stick2.GetTrigger() : stick1.GetRawButton(6)) {
 				innerliftvoltage = innerliftvoltage / 2.0;
 			}
 			innerlifts[0]->Set(innerliftvoltage);
 			innerlifts[1]->Set(innerliftvoltage);
 			
 			outerliftavg = ((outerliftavg * 29.0) + outerliftvoltage) / 30.0;
-			
+			  
 			framecount++;
 			
 			if (framecount > 60) {
