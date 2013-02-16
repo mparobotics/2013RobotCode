@@ -30,7 +30,7 @@ class RobotDemo : public SimpleRobot
 public:
 	RobotDemo(void):
 		myRobot(1, 2),	// these must be initialized in the same order
-		stick1(1),		// as they are declared above.
+		stick1(1, 6, 12),		// as they are declared above.
 		stick2(2)
 	{
 		myRobot.SetExpiration(0.1);
@@ -107,12 +107,12 @@ public:
 			}
 			*/
 			
-			outerliftvoltage = 12.0 * joytrim(stick1.GetY());
+			outerliftvoltage = 12.0 * joytrim(stick1.GetRawAxis(2));
 			for (int i = 0; i < 4; i++) {
 				outerlifts[i]->Set(outerliftvoltage * (i > 1 ? -1 : 1));
 			}
-			innerliftvoltage = 12.0 * joytrim(stick2.GetY());
-			innerlifts[0]->Set(outerliftvoltage);
+			innerliftvoltage = 12.0 * joytrim(stick1.GetRawAxis(5));
+			innerlifts[0]->Set(innerliftvoltage);
 			innerlifts[1]->Set(innerliftvoltage);
 			
 			outerliftavg = ((outerliftavg * 29.0) + outerliftvoltage) / 30.0;
@@ -126,7 +126,7 @@ public:
 			
 			//printf("%f", jag1.GetOutputVoltage());
 			//printf("\n");
-			Wait((1.0 / 26.25));				// wait for a motor update time
+			Wait((1.0 / 15.0 /* / 26.25 */));				// wait for a motor update time
 		}
 	}
 	
