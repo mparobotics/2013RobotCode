@@ -4,13 +4,10 @@
 
 
 #include "matrix.h"
+#include "convenience.h"
 const double spacing_length = 7.875; //length of wheel contact spacing [in]
 const double spacing_width = 5.5; // width of wheel contact spacing [in]
 double p = .5; //proportion of weight distribution [see drawings] [front-to-back]
-
-double distanceFormula(double a, double b) {
-	return sqrt((a * a) + (b * b));
-}
 
 double drivetrain_inverse_mat[16];
 
@@ -48,10 +45,6 @@ double heuristicFunc(double x) {
 		return -50.0 * x - 50.0;
 	}
 	return 0.0;
-}
-
-double sq(double x) {
-    return x * x;
 }
 
 /* input: array of drivetrain voltage scalars. Output: rough power consumption */

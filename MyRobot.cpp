@@ -3,26 +3,13 @@
 #include <Solenoid.h>
 #include "omnitrain.h"
 
-//This function takes joystick axis input, and makes a dead-zone and a limit
-double joytrim(double x) {
-	if (x > 1.0) {
-		x = 1.0;
-	}
-	if (x < -1.0) {
-		x = -1.0;
-	}
-	if (fabs(x) < 0.05) {
-		x = 0.0;
-	}
-	return x;
-}
 
 class RobotDemo : public SimpleRobot
 {
 	RobotDrive myRobot; // robot drive system
 	Joystick stick1; // joystick1
 	Joystick stick2; //joystick2
-	CANJaguar* drivejags[4]; //Declartion for Jaguar 1
+	Jaguar* drivejags[4]; //Declartion for Jaguar 1
 	CANJaguar* innerlifts[2];
 	CANJaguar* outerlifts[4];
 	//Gyro gyro;
@@ -34,10 +21,10 @@ public:
 		stick2(2)
 	{
 		myRobot.SetExpiration(0.1);
-		drivejags[0] = new CANJaguar(3, CANJaguar::kVoltage);
-		drivejags[1] = new CANJaguar(1, CANJaguar::kVoltage);
-		drivejags[2] = new CANJaguar(4, CANJaguar::kVoltage);
-		drivejags[3] = new CANJaguar(2, CANJaguar::kVoltage);
+		drivejags[0] = new Jaguar(3);
+		drivejags[1] = new Jaguar(1);
+		drivejags[2] = new Jaguar(4);
+		drivejags[3] = new Jaguar(2);
 		innerlifts[0] = new CANJaguar(9, CANJaguar::kVoltage);
 		innerlifts[1] = new CANJaguar(10, CANJaguar::kVoltage);
 		outerlifts[0] = new CANJaguar(5, CANJaguar::kVoltage);
@@ -54,14 +41,12 @@ public:
 	
 	void OperatorControl(void)
 	{
-		myRobot.SetSafetyEnabled(true);
-		for (int i = 0; i < 4; i++) {
-			drivejags[i]->SetSpeedReference(CANJaguar::kSpeedRef_None);
-			drivejags[i]->EnableControl();
-		}
-		setupOmniTrain(2.0, 2.0);
-		double drive[4];
+		myRobot.SetSafetyEnabled(false);
 		
+		setupOmniTrain(2.0, 2.0);
+		double drive[4]; //Drivetrain jag voltages
+		
+		//Initialize the lifts
 		for (int i = 0; i < 4; i++) {
 			outerlifts[i]->SetSpeedReference(CANJaguar::kSpeedRef_None);
 			outerlifts[i]->EnableControl();
@@ -72,10 +57,11 @@ public:
 			innerlifts[i]->EnableControl();
 		}
 		
-		
+		//Voltage variables
 		double outerliftvoltage;
 		double innerliftvoltage;
 		
+		//For finding the "hang" voltage and debugging
 		double outerliftavg = 0;
 		int framecount = 0;
 		
@@ -83,7 +69,7 @@ public:
 		{        
 			/* boundedDriveOmniTrain(stick1.GetX(), stick1.GetY(), stick2.GetX(), drive);
 			for (int i = 0; i < 4; i++) {
-				drivejags[i]->Set(drive[i] * 12.0);
+				drivejags[i]->Set(drive[i]);
 			} */
 			/*
 			if (stick1.GetRawButton(1)) {
@@ -107,11 +93,18 @@ public:
 			}
 			*/
 			
-			outerliftvoltage = 12.0 * joytrim(stick1.GetRawAxis(2));
+			outerliftvoltage = -12.0 * joytrim(stick1.GetRawAxis(2));
+			if (stick1.GetRawButton(5)) {
+				outerliftvoltage = outerliftvoltage / 2.0;
+			}
 			for (int i = 0; i < 4; i++) {
 				outerlifts[i]->Set(outerliftvoltage * (i > 1 ? -1 : 1));
 			}
+			
 			innerliftvoltage = 12.0 * joytrim(stick1.GetRawAxis(5));
+			if (stick1.GetRawButton(6)) {
+				innerliftvoltage = innerliftvoltage / 2.0;
+			}
 			innerlifts[0]->Set(innerliftvoltage);
 			innerlifts[1]->Set(innerliftvoltage);
 			
