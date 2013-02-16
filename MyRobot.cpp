@@ -12,6 +12,8 @@ class RobotDemo : public SimpleRobot
 	Jaguar* drivejags[4]; //Declartion for Jaguar 1
 	CANJaguar* innerlifts[2];
 	CANJaguar* outerlifts[4];
+	bool states[2];
+	SendableChooser *controlChooser;
 	//Gyro gyro;
 
 public:
@@ -31,6 +33,15 @@ public:
 		outerlifts[1] = new CANJaguar(6, CANJaguar::kVoltage);
 		outerlifts[2] = new CANJaguar(7, CANJaguar::kVoltage);
 		outerlifts[3] = new CANJaguar(8, CANJaguar::kVoltage);
+		
+		states[0] = false;
+		states[1] = true;
+		
+		controlChooser = new SendableChooser();
+		controlChooser->AddDefault("Xbox Controllers", states);
+		controlChooser->AddObject("ATK3 Joysticks", states + 1);
+		SmartDashboard::PutData("Control mode chooser", controlChooser);
+	
 	}
 
 	void Autonomous(void)
@@ -42,6 +53,7 @@ public:
 	void OperatorControl(void)
 	{
 		myRobot.SetSafetyEnabled(false);
+		
 		
 		setupOmniTrain(2.0, 2.0);
 		double drive[4]; //Drivetrain jag voltages
@@ -64,6 +76,9 @@ public:
 		//For finding the "hang" voltage and debugging
 		double outerliftavg = 0;
 		int framecount = 0;
+		
+		//False if Xbox controllers, true if joysticks
+		bool controlmethod = *((bool *) controlChooser->GetSelected());
 		
 		while (IsOperatorControl())
 		{        
