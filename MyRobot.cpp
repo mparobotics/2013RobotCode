@@ -1,15 +1,12 @@
 #include "WPILib.h"
-#include <ADXL345_SPI.h>
 #include <Solenoid.h>
-#include "omnitrain.h"
-
+#include "convenience.h"
 
 class RobotDemo : public IterativeRobot
 {
 	RobotDrive myRobot; // robot drive system
 	Joystick stick1; // joystick1
 	Joystick stick2; //joystick2
-	Jaguar* drivejags[4]; //Declartion for Jaguar 1
 	Jaguar* innerlifts[2];
 	Jaguar* outerlifts[4];
 	int states[2];
@@ -24,7 +21,6 @@ class RobotDemo : public IterativeRobot
 	//bool controlmethod = *((bool *) controlChooser->GetSelected());
 	bool controlmethod;
 	SendableChooser *controlChooser;
-	//Gyro gyro;
 
 public:
 	RobotDemo(void):
@@ -32,11 +28,7 @@ public:
 		stick1(1, 6, 12),		// as they are declared above.
 		stick2(2)
 	{
-		myRobot.SetExpiration(0.1); /*
-		drivejags[0] = new Jaguar(3);
-		drivejags[1] = new Jaguar(1);
-		drivejags[2] = new Jaguar(4);
-		drivejags[3] = new Jaguar(2); */
+		myRobot.SetExpiration(0.1);
 		innerlifts[0] = new Jaguar(7);
 		innerlifts[1] = new Jaguar(8);
 		outerlifts[0] = new Jaguar(3);
@@ -66,8 +58,6 @@ public:
 		
 		
 		myRobot.SetSafetyEnabled(false);
-		
-		setupOmniTrain(2.0, 2.0);
 		/*
 		//Initialize the lifts
 		for (int i = 0; i < 4; i++) {
@@ -83,32 +73,6 @@ public:
 	
 	virtual void TeleopPeriodic()
 	{	
-		/* boundedDriveOmniTrain(stick1.GetX(), stick1.GetY(), stick2.GetX(), drive);
-		for (int i = 0; i < 4; i++) {
-			drivejags[i]->Set(drive[i]);
-		} */
-		/*
-		if (stick1.GetRawButton(1)) {
-			innerlift->Set(12.0);
-		}
-		else if (stick1.GetRawButton(2)) {
-			innerlift->Set(-12.0);
-		}
-		else {
-			innerlift->Set(0.0);
-		}
-		
-		if (stick1.GetRawButton(3)) {
-			outerliftvoltage = 12.0;
-		}
-		else if (stick1.GetRawButton(4)) {
-			outerliftvoltage = -12.0;
-		}
-		else {
-			outerliftvoltage = 0.0;
-		}
-		*/
-		
 		outerliftvoltage = -1.0 * joytrim(controlmethod ? stick1.GetY() : stick1.GetRawAxis(2));
 		if (controlmethod ? stick1.GetTrigger() : stick1.GetRawButton(5)) {
 			outerliftvoltage = outerliftvoltage / 2.0;
