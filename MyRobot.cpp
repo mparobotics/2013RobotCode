@@ -1,6 +1,7 @@
 #include "WPILib.h"
 #include <Solenoid.h>
 #include "convenience.h"
+#define DEBUGTIME
 
 class RobotDemo : public IterativeRobot
 {
@@ -14,9 +15,7 @@ class RobotDemo : public IterativeRobot
 	//Voltage variables
 	double outerliftvoltage;
 	double innerliftvoltage;
-	//For finding the "hang" voltage and debugging
-	double outerliftavg;
-	int framecount;
+	
 	//False if Xbox controllers, true if joysticks
 	//bool controlmethod = *((bool *) controlChooser->GetSelected());
 	bool controlmethod;
@@ -26,7 +25,7 @@ public:
 	RobotDemo(void):
 		myRobot(1, 2),	// these must be initialized in the same order
 		stick1(1, 6, 12),		// as they are declared above.
-		stick2(2)
+		stick2(2, 6, 12)
 	{
 		myRobot.SetExpiration(0.1);
 		innerlifts[0] = new Jaguar(7);
@@ -51,8 +50,7 @@ public:
 	}
 
 	virtual void TeleopInit() {
-		outerliftavg = 0;
-		framecount = 0;
+		
 		//False if Xbox controllers, true if joysticks
 		controlmethod = (bool) *((int *)controlChooser->GetSelected());
 		
@@ -73,32 +71,33 @@ public:
 	
 	virtual void TeleopPeriodic()
 	{	
-		outerliftvoltage = -1.0 * joytrim(controlmethod ? stick1.GetY() : stick1.GetRawAxis(2));
-		if (controlmethod ? stick1.GetTrigger() : stick1.GetRawButton(5)) {
+		outerliftvoltage = -1.0 * joytrim(controlmethod ? stick1.GetRawAxis(2) : stick1.GetRawAxis(2));
+		if (controlmethod ? stick1.GetRawButton(2) : stick1.GetRawButton(5)) {
 			outerliftvoltage = outerliftvoltage / 2.0;
 		}
 		for (int i = 0; i < 4; i++) {
 			outerlifts[i]->Set(outerliftvoltage * (i > 1 ? -1 : 1));
 		}
 		
-		innerliftvoltage = 1.0 * joytrim(controlmethod ? stick2.GetY() : stick1.GetRawAxis(5));
-		if (controlmethod ? stick2.GetTrigger() : stick1.GetRawButton(6)) {
+
+		
+		innerliftvoltage = 1.0 * joytrim(controlmethod ? stick2.GetRawAxis(2) : stick1.GetRawAxis(5));
+		if (controlmethod ? stick2.GetRawButton(2) : stick1.GetRawButton(6)) {
 			innerliftvoltage = innerliftvoltage / 2.0;
 		}
 		innerlifts[0]->Set(innerliftvoltage);
 		innerlifts[1]->Set(innerliftvoltage);
 		
-		outerliftavg = ((outerliftavg * 29.0) + outerliftvoltage) / 30.0;
+#ifdef DEBUGTIME
+		
+		printf("%s", "\n \n outer voltage: ");
+		printf("%f", outerliftvoltage);
+		printf("%s", " \n inner voltage: ");
+		printf("%f", innerliftvoltage);
+		Wait(1.0);
+#endif
 		  
-		framecount++;
-		/*
-		if (framecount > 60) {
-			printf("%f", outerliftavg);
-		}
-		*/
-		//printf("%f", jag1.GetOutputVoltage());
-		//printf("\n");
-		Wait((1.0 / 15.0 /* / 26.25 */));				// wait for a motor update time
+		Wait((1.0 / 15.0));				// wait for a motor update time
 	}
 };
 
