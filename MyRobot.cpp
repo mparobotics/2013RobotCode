@@ -9,15 +9,14 @@ class RobotDemo : public IterativeRobot
 	Joystick stick1; // joystick1
 	Joystick stick2; //joystick2
 	CANJaguar* innerlifts[2];
-	CANJaguar* outerlifts[4];
+	CANJaguar* outerlifts[2];
 	int states[2];
-	double drive[4]; //Drivetrain jag voltages
+	
 	//Voltage variables
 	double outerliftvoltage;
 	double innerliftvoltage;
 	
 	//False if Xbox controllers, true if joysticks
-	//bool controlmethod = *((b ool *) controlChooser->GetSelected());
 	bool controlmethod;
 	SendableChooser *controlChooser;
 
@@ -46,11 +45,11 @@ public:
 		innerlifts[1] = new CANJaguar(4, CANJaguar::kPercentVbus);
 		outerlifts[0] = new CANJaguar(1, CANJaguar::kPercentVbus);
 		outerlifts[1] = new CANJaguar(3, CANJaguar::kPercentVbus);
-		outerlifts[2] = new CANJaguar(5, CANJaguar::kPercentVbus);
-		outerlifts[3] = new CANJaguar(6, CANJaguar::kPercentVbus);
+		
+
 		
 		//Initialize the lifts
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 2; i++) {
 			outerlifts[i]->SetSpeedReference(CANJaguar::kSpeedRef_None);
 			outerlifts[i]->EnableControl();
 		}
@@ -77,9 +76,9 @@ public:
 		if (controlmethod ? stick1.GetRawButton(2) : stick1.GetRawButton(5)) {
 			outerliftvoltage = outerliftvoltage / 2.0;
 		}
-		for (int i = 0; i < 4; i++) {
-			outerlifts[i]->Set(outerliftvoltage * ((i > 1) ? -1.0 : 1.0));
-		}
+		
+		outerlifts[0]->Set(outerliftvoltage);
+		outerlifts[1]->Set(-outerliftvoltage);
 		
 
 		
@@ -99,10 +98,6 @@ public:
 		printf("%f", outerlifts[0]->Get());
 		printf("%s", "\n");
 		printf("%f", outerlifts[1]->Get());
-		printf("%s", "\n");
-		printf("%f", outerlifts[2]->Get());
-		printf("%s", "\n");
-		printf("%f", outerlifts[3]->Get());
 		printf("%s", "\n");
 		printf("%f", innerlifts[0]->Get());
 		printf("%f", innerlifts[1]->Get());
